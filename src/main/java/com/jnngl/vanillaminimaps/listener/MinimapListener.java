@@ -28,6 +28,8 @@ import com.jnngl.vanillaminimaps.map.MinimapLayer;
 import com.jnngl.vanillaminimaps.map.SecondaryMinimapLayer;
 import com.jnngl.vanillaminimaps.map.fullscreen.FullscreenMinimap;
 import com.jnngl.vanillaminimaps.map.icon.MinimapIcon;
+import com.jnngl.vanillaminimaps.map.marker.GlobalMarker;
+import com.jnngl.vanillaminimaps.map.marker.GlobalMarkerLayer;
 import com.jnngl.vanillaminimaps.map.marker.MarkerMinimapLayer;
 import com.jnngl.vanillaminimaps.map.renderer.MinimapLayerRenderer;
 import com.jnngl.vanillaminimaps.map.renderer.world.WorldMinimapRenderer;
@@ -90,7 +92,7 @@ public class MinimapListener implements Listener {
 
     playerMinimaps.put(player.getUniqueId(), minimap);
 
-    MinimapIcon playerIcon = plugin.iconProvider().getIcon("player");
+    MinimapIcon playerIcon = plugin.iconProvider().getIcon("offscreen_player");
     MinimapIcon offscreenPlayerIcon = plugin.iconProvider().getIcon("offscreen_player");
     if (playerIcon != null) {
       MinimapLayer playerIconBaseLayer = minimapFactory.createMinimapLayer(player.getWorld(), null);
@@ -99,6 +101,12 @@ public class MinimapListener implements Listener {
       minimap.secondaryLayers().put("player", playerIconLayer);
 
       packetSender.spawnLayer(player, playerIconBaseLayer);
+    }
+    for (GlobalMarker global : plugin.getGlobalMarkers().getMarkers()) {
+      MinimapLayer globalLayer = minimapFactory.createMinimapLayer(player.getWorld(), null);
+      SecondaryMinimapLayer globalIconLayer = new GlobalMarkerLayer(globalLayer, new MinimapIconRenderer(global.icon(), null), false, false, player.getWorld(), global.x(), global.z(), 0.4F);
+      minimap.secondaryLayers().put("global_" + global.id(), globalIconLayer);
+      packetSender.spawnLayer(player, globalLayer);
     }
 
     if (worldRenderer instanceof CacheableWorldMinimapRenderer cacheable) {

@@ -26,9 +26,11 @@ import com.jnngl.vanillaminimaps.map.MinimapScreenPosition;
 import com.jnngl.vanillaminimaps.map.SecondaryMinimapLayer;
 import com.jnngl.vanillaminimaps.map.fullscreen.FullscreenMinimap;
 import com.jnngl.vanillaminimaps.map.icon.MinimapIcon;
+import com.jnngl.vanillaminimaps.map.marker.GlobalMarker;
 import com.jnngl.vanillaminimaps.map.marker.MarkerMinimapLayer;
 import com.jnngl.vanillaminimaps.map.renderer.MinimapIconRenderer;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandExceptionType;
@@ -61,7 +63,7 @@ public class MinimapCommand extends BrigadierCommand {
     }
 
     dispatcher.register(
-        Commands.literal("minimap")
+        Commands.literal("map")
             .then(Commands.literal("enable")
                 .executes(this::enable))
             .then(Commands.literal("disable")
@@ -73,6 +75,12 @@ public class MinimapCommand extends BrigadierCommand {
                         .then(Commands.argument("icon", StringArgumentType.string())
                             .suggests(this::suggestIcons)
                             .executes(this::addMarker))))
+                .then(Commands.literal("global")
+                        .then(Commands.argument("name", StringArgumentType.string())
+                        .then(Commands.argument("icon", StringArgumentType.string())
+                            .suggests(this::suggestIcons)
+                            .then(Commands.argument("by_default", BoolArgumentType.bool())
+                                .executes(this::addGlobalMarker)))))
                 .then(Commands.literal("set")
                     .then(Commands.argument("name", StringArgumentType.string())
                         .suggests(this::suggestMarkers)
@@ -322,6 +330,22 @@ public class MinimapCommand extends BrigadierCommand {
     minimap.update(getPlugin());
     save(minimap);
 
+    return 1;
+  }
+
+  private int addGlobalMarker(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    String markerName = StringArgumentType.getString(ctx, "name");
+    String iconName = StringArgumentType.getString(ctx, "icon");
+    boolean byDefault = BoolArgumentType.getBool(ctx, "by_default");
+
+    ServerPlayer serverPlayer = ctx.getSource().getPlayerOrException();
+    Player player = serverPlayer.getBukkitEntity();
+    getPlugin().getGlobalMarkers().addMarker(new GlobalMarker(markerName, minimapIcon(iconName), player.getLocation().getBlockX(), player.getLocation().getBlockZ(), byDefault));
+    getPlugin().getGlobalMarkers().save();
+    player.sendRichMessage("<green>Global marker " + markerName + " added at " + player.getLocation().getBlockX() + " " + player.getLocation().getBlockZ() + " with icon " + iconName + " and visibility " + byDefault + ".");
+    Minimap minimap = getPlugin().getPlayerMinimap(player);
+    minimap.update(getPlugin());
+    save(minimap);
     return 1;
   }
 

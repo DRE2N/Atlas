@@ -24,8 +24,7 @@ import org.bukkit.World;
 
 public class MarkerMinimapLayer extends SecondaryMinimapLayer {
 
-  public MarkerMinimapLayer(MinimapLayer baseLayer, SecondaryMinimapLayerRenderer renderer, boolean trackLocation,
-                            boolean keepOnEdge, World world, int positionX, int positionZ, float depth) {
+  public MarkerMinimapLayer(MinimapLayer baseLayer, SecondaryMinimapLayerRenderer renderer, boolean trackLocation, boolean keepOnEdge, World world, int positionX, int positionZ, float depth) {
     super(baseLayer, renderer, trackLocation, keepOnEdge, world, positionX, positionZ, depth);
   }
 }

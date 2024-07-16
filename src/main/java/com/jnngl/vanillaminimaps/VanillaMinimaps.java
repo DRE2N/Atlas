@@ -35,6 +35,7 @@ import com.jnngl.vanillaminimaps.map.MinimapProvider;
 import com.jnngl.vanillaminimaps.map.fullscreen.FullscreenMinimap;
 import com.jnngl.vanillaminimaps.map.icon.provider.BuiltinMinimapIconProvider;
 import com.jnngl.vanillaminimaps.map.icon.provider.MinimapIconProvider;
+import com.jnngl.vanillaminimaps.map.marker.GlobalMarkers;
 import com.jnngl.vanillaminimaps.map.renderer.world.WorldMinimapRenderer;
 import com.jnngl.vanillaminimaps.map.renderer.world.cache.CacheableWorldMinimapRenderer;
 import com.jnngl.vanillaminimaps.map.renderer.world.provider.BuiltinMinimapWorldRendererProvider;
@@ -53,12 +54,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+
 
 public final class VanillaMinimaps extends JavaPlugin implements MinimapProvider, Listener {
 
@@ -97,6 +99,8 @@ public final class VanillaMinimaps extends JavaPlugin implements MinimapProvider
 
   @MonotonicNonNull
   private MinimapPlayerDatabase playerDataStorage;
+
+  private final GlobalMarkers globalMarkers = new GlobalMarkers(this, new File(getDataFolder(), "global-markers.yml"));
 
   @Override
   @SneakyThrows
@@ -201,6 +205,10 @@ public final class VanillaMinimaps extends JavaPlugin implements MinimapProvider
   public PassengerRewriter getPassengerRewriter(Player player) {
     return passengerRewriters.get(player);
   }
+
+    public GlobalMarkers getGlobalMarkers() {
+        return globalMarkers;
+    }
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerJoin(PlayerJoinEvent event) {

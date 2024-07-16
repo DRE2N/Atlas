@@ -67,7 +67,6 @@ tasks {
     }
     shadowJar {
         relocate("net.elytrium.serializer", "com.jnngl.vanillaminimaps.serializer")
-        relocate("org.bstats", "com.jnngl.vanillaminimaps.metrics")
         exclude("org/slf4j/**")
     }
     bukkit {
@@ -75,13 +74,5 @@ tasks {
         main = "com.jnngl.vanillaminimaps.VanillaMinimaps"
         apiVersion = "1.21"
         authors = listOf("JNNGL", "Malfrador")
-        commands {
-            register("map") {
-                description = "Main command for Atlas"
-                aliases = listOf("m", "mp")
-                permission = "atlas.cmd"
-                usage = "/map help"
-            }
-        }
     }
 }
